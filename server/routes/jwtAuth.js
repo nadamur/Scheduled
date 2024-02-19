@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const client = require('../database/db');
 const jwtGenerator = require('../utils/jwtGenerator');
+const authorize = require('../middleware/authorize');
 
 // -----------------ID HELPER METHODS----------------------
 //method to generate new store_id
@@ -78,10 +79,19 @@ router.post("/login", async (req,res) =>{
         //generate token
         const token = jwtGenerator(storeID);
         res.json({token});
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
+    }
+});
+
+//-------------------VERIFY JWT--------------------
+router.post('/verify', authorize, (req,res) =>{
+    try{
+        res.json(true);
+    }catch(err){
+        console.log(err.message);
+        res.status(500).send("Server error")
     }
 });
 
