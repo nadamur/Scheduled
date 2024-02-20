@@ -1,9 +1,11 @@
+//al requests related to authentication
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const client = require('../database/db');
 const jwtGenerator = require('../utils/jwtGenerator');
 const authorize = require('../middleware/authorize');
+const validInfo = require('../middleware/validInfo');
 
 // -----------------ID HELPER METHODS----------------------
 //method to generate new store_id
@@ -23,11 +25,11 @@ const getStoreID = async (username) =>{
 
 // --------------------ROUTES---------------------
 //registering
-router.post("/register", async (req,res) =>{
+router.post("/register", validInfo, async (req,res) =>{
     const { username, password} = req.body;
     try {
         const user = await client.query(
-            "SELECT * FROM store WHERE username = $1", [username]
+            "SELECT * FROM store WHERE username ILIKE $1", [username]
             );
         if (user.rows.length > 0){
             //username already exists
@@ -54,11 +56,11 @@ router.post("/register", async (req,res) =>{
 });
 
 //logging in
-router.post("/login", async (req,res) =>{
+router.post("/login", validInfo, async (req,res) =>{
     const { username, password} = req.body;
     try {
         const user = await client.query(
-            "SELECT * FROM store WHERE username = $1", [username]
+            "SELECT * FROM store WHERE username ILIKE $1", [username]
             );
         if (user.rows.length === 0){
             //username does not exist

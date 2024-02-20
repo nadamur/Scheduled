@@ -1,12 +1,12 @@
 import React, {Fragment, useState, useEffect} from 'react';
-import "react-toastify/dist/ReactToastify.css";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate
 } from "react-router-dom";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 //pages
 import LogIn from './pages/Authentication/LogIn';
@@ -17,12 +17,11 @@ import StoreOptions from './pages/Configuration/StoreOptions';
 import Home from './pages/Home';
 import Schedule from './pages/Schedule';
 
-//toast.configure();
 
 function App(){
   const checkAuthenticated = async () =>{
     try{
-      const res = await fetch ('http://localhost:5000/authentication/verify', {
+      const res = await fetch ('http://localhost:5000/auth/verify', {
         method: "POST",
         headers: {jwt_token: localStorage.token}
       });
@@ -48,19 +47,17 @@ function App(){
     <Fragment>
       <Router>
         <div className='container'>
+          <ToastContainer/>
           <Routes>
             <Route
               exact path = "/login"
-              render={props => 
-                !isAuthenticated ? ( <LogIn {...props} setAuth={setAuth} />) : (<Navigate to="/home"/>)}/>
-            <Route
-              exact path = "/register"
-              render={props => 
-                !isAuthenticated ? ( <SignUp {...props} setAuth={setAuth} />) : (<Navigate to="/home"/>)}/>
+              element={!isAuthenticated ? ( <LogIn setAuth={setAuth} />) : (<Navigate to="/"/>)}/>
             <Route
               exact path = "/"
-              render={props => 
-                !isAuthenticated ? ( <Home {...props} setAuth={setAuth} />) : (<Navigate to="/login"/>)}/>
+              element={isAuthenticated ? ( <Home setAuth={setAuth} />) : (<Navigate to="/login"/>)}/>
+            <Route
+              exact path = "/register"
+              element={!isAuthenticated ? ( <SignUp setAuth={setAuth} />) : (<Navigate to="/"/>)}/>
           </Routes>
         </div>
       </Router>

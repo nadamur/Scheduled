@@ -7,8 +7,10 @@ app.use(express.json());
 app.use(cors());
 
 //routes
-//user related
+//authentication related
 app.use('/auth', require('./routes/jwtAuth'));
+//schedule related
+app.use('/schedule', require('./routes/schedule'));
 
 
 //listen on port 5000
